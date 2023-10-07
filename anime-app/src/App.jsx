@@ -94,7 +94,6 @@ function NumResult() {
 function Main() {
   const [animes, setAnimes] = useState(animesData);
   const [selectedAnime, setSelectedAnime] = useState(animes[0]);
-  const [isOpen2, setIsOpen2] = useState(true);
 
   function handleSelectedAnime(id) {
     const newAnime = animes.filter((anime) => anime.mal_id === id);
@@ -102,56 +101,77 @@ function Main() {
   }
   return (
     <main className="main">
-        <AnimeList animes={animes} onSelectedAnime={handleSelectedAnime}/>
-        <div className="box">
-          <button className="btn-toggle" onClick={() => setIsOpen2((open) => !open)}>
-            {isOpen2 ? '–' : '+'}
-          </button>
-          {isOpen2 && (
-            <div className="details">
-              <header>
-                <img src={selectedAnime.image} alt={`${selectedAnime.title} cover`} />
-                <div className="details-overview">
-                  <h2>{selectedAnime.title}</h2>
-                  <p>
-                    {selectedAnime.year} &bull; {selectedAnime.score}
-                  </p>
-                </div>
-              </header>
-              <section>
-                <p>
-                  <em>{selectedAnime.synopsis}</em>
-                </p>
-              </section>
-            </div>
-          )}
-        </div>
+        <ListBox animes={animes} onSelectedAnime={handleSelectedAnime}/>
+        <SelectedBox selectedAnime={selectedAnime}/>
       </main>
   );
 }
 
-function AnimeList({animes, onSelectedAnime}){
+function ListBox({animes, onSelectedAnime}){
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
           <button className="btn-toggle" onClick={() => setIsOpen1((open) => !open)}>
             {isOpen1 ? '–' : '+'}
           </button>
-          {isOpen1 && (
-            <ul className="list list-anime">
-              {animes?.map((anime) => (
-                <li key={anime.mal_id} onClick={() => onSelectedAnime(anime.mal_id)}>
-                  <img src={anime.image} alt={`${anime.title} cover`} />
-                  <h3>{anime.title}</h3>
-                  <div>
-                    <p>
-                      <span>{anime.year}</span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+          {isOpen1 && <AnimeList animes={animes} onSelectedAnime={onSelectedAnime}/>}
         </div>
+  );
+}
+
+function AnimeList({animes, onSelectedAnime}){
+  return (
+    <ul className="list list-anime">
+      {animes?.map((anime) => (
+        <Anime key={anime.mal_id} anime={anime} onSelectedAnime={onSelectedAnime}/>
+      ))}
+    </ul>
+  );
+}
+
+function Anime({anime, onSelectedAnime}){
+  return (
+    <li onClick={() => onSelectedAnime(anime.mal_id)}>
+      <img src={anime.image} alt={`${anime.title} cover`} />
+      <h3>{anime.title}</h3>
+      <div>
+        <p>
+          <span>{anime.year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function SelectedBox({selectedAnime}){
+  const [isOpen2, setIsOpen2] = useState(true);
+  return (
+    <div className="box">
+          <button className="btn-toggle" onClick={() => setIsOpen2((open) => !open)}>
+            {isOpen2 ? '–' : '+'}
+          </button>
+          {isOpen2 && <AnimeDetail selectedAnime={selectedAnime}/>}
+        </div>
+  );
+}
+
+function AnimeDetail({selectedAnime}){
+  return (
+    <div className="details">
+      <header>
+        <img src={selectedAnime.image} alt={`${selectedAnime.title} cover`} />
+        <div className="details-overview">
+          <h2>{selectedAnime.title}</h2>
+          <p>
+            {selectedAnime.year} &bull; {selectedAnime.score}
+          </p>
+        </div>
+      </header>
+      <section>
+        <p>
+          <em>{selectedAnime.synopsis}</em>
+        </p>
+      </section>
+    </div>
   );
 }
